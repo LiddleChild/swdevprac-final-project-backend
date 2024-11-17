@@ -15,8 +15,16 @@ exports.register = async (req, res, next) => {
     });
     sendTokenResponse(user, 200, res);
   } catch (err) {
+    let msg;
+    if (err.name === "MongoServerError" && err.code === 11000) {
+      msg = `${Object.keys(err.keyValue)[0]} already exists`;
+    } else if (err.name === "ValidationError") {
+      msg = Object.values(err.errors)[0].message;
+    }
+
     res.status(400).json({
       success: false,
+      msg,
     });
     console.log(err.stack);
   }
@@ -29,9 +37,7 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, msg: "Please provide an email and password" });
+      return res.status(400).json({ success: false, msg: "Please provide an email and password" });
     }
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
@@ -59,9 +65,7 @@ exports.login = async (req, res, next) => {
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
   const options = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-    ),
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
     httpOnly: true,
   };
   if (process.env.NODE_ENV === "production") {
