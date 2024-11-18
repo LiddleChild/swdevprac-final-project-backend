@@ -14,29 +14,49 @@ exports.getBookings = async (req, res, next) => {
       query = Booking.find({
         user: req.user.id,
         dentist: dentistId,
-      }).populate({
-        path: "dentist",
-        select: "name address tel picture hospital",
-      });
+      })
+        .populate({
+          path: "dentist",
+          select: "name address tel picture hospital",
+        })
+        .populate({
+          path: "user",
+          select: "name email",
+        });
     } else {
       query = Booking.find({
         user: req.user.id,
-      }).populate({
-        path: "dentist",
-        select: "name address tel picture hospital",
-      });
+      })
+        .populate({
+          path: "dentist",
+          select: "name address tel picture hospital",
+        })
+        .populate({
+          path: "user",
+          select: "name email",
+        });
     }
   } else {
     if (dentistId) {
-      query = Booking.find({ dentist: dentistId }).populate({
-        path: "dentist",
-        select: "name address tel picture hospital",
-      });
+      query = Booking.find({ dentist: dentistId })
+        .populate({
+          path: "dentist",
+          select: "name address tel picture hospital",
+        })
+        .populate({
+          path: "user",
+          select: "name email",
+        });
     } else {
-      query = Booking.find().populate({
-        path: "dentist",
-        select: "name address tel picture hospital",
-      });
+      query = Booking.find()
+        .populate({
+          path: "dentist",
+          select: "name address tel picture hospital",
+        })
+        .populate({
+          path: "user",
+          select: "name email",
+        });
     }
   }
   try {
