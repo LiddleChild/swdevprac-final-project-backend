@@ -95,7 +95,7 @@ exports.getBooking = async (req, res, next) => {
       });
     }
 
-    if (booking.user.toString() !== req.user.id && req.user.role !== "admin") {
+    if (booking.user._id.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(401).json({
         success: false,
         message: `User ${req.user.id} is not authorized to view this booking`,
