@@ -78,10 +78,15 @@ exports.getBookings = async (req, res, next) => {
 exports.getBooking = async (req, res, next) => {
   let booking;
   try {
-    booking = await Booking.findById(req.params.id).populate({
-      path: "dentist",
-      select: "name address tel",
-    });
+    booking = await Booking.findById(req.params.id)
+      .populate({
+        path: "dentist",
+        select: "name address tel",
+      })
+      .populate({
+        path: "user",
+        select: "name email",
+      });
 
     if (!booking) {
       return res.status(404).json({
